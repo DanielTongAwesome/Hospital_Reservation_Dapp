@@ -62,13 +62,23 @@ contract Ethospital {
     function createAppoinment(string memory _patientName) public {
         // 1. check name 2. check patient status
         require(bytes(_patientName).length > 0, 'Patient name must not be empty');
-        require(Appointments[msg.sender].status != eventstatus.no_appointment, 'Patient cannot submit request twice');
+        require(Appointments[msg.sender].status == eventstatus.no_appointment, 'Patient cannot submit request twice');
 
         // all requires pass, perform creating appoinment
         totalNumber++;
         // save appointment
         Appointments[msg.sender] = Appointment(totalNumber, _patientName, msg.sender, eventstatus.pending);
         emit AppointmentReady(totalNumber, totalNumber, _patientName, eventstatus.pending);
+    }
+
+    // cancel appointment
+    function cancelAppointment() public {
+        // 1. check name 2. check patient status
+        require(Appointments[msg.sender].status != eventstatus.no_appointment, 'Patient cannot submit request twice');
+         // update appointment status to no_appointment
+        string memory _patientName = Appointments[msg.sender].patientName;
+        Appointments[msg.sender] = Appointment(totalNumber, _patientName, msg.sender, eventstatus.no_appointment);
+        emit AppointmentCancel(totalNumber, totalNumber, _patientName, eventstatus.no_appointment);
     }
 
 
